@@ -25,11 +25,6 @@ jobs:
     - name: Run Buildozer
       run: |
         buildozer init
-        buildozer -v android debug
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: Jarvis-APK
-        path: bin/*.apk
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+        yes | buildozer -v android debug
         
