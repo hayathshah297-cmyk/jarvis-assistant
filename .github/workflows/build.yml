@@ -24,7 +24,7 @@ jobs:
 
     - name: Run Buildozer
       run: |
-        yes | buildozer init
+        buildozer init
         buildozer -v android debug
 
     - name: Upload APK
