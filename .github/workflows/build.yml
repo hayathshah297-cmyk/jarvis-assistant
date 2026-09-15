@@ -11,12 +11,32 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Build with Buildozer Docker
-      uses: android-act/buildozer-action@v1
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        command: |
-          yes | sdkmanager --licenses || true
-          buildozer -v android debug
+        python-version: '3.10'
+
+    - name: Cache Buildozer global directory
+      uses: actions/cache@v4
+      with:
+        path: ~/.buildozer
+        key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          ${{ runner.os }}-buildozer-
+
+    - name: Install Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libssl-dev libffi-dev liblzma-dev
+        pip install --upgrade pip
+        pip install --user Cython==0.30.0 buildozer
+
+    - name: Run Buildozer
+      run: |
+        export PATH=$PATH:~/.local/bin
+        buildozer init
+        yes | sdkmanager --licenses || true
+        buildozer -v android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
