@@ -1,8 +1,8 @@
-name: Build Android APK
+name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -16,12 +16,32 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install dependencies
+    - name: Install System Dependencies
       run: |
-        sudo apt update
-        sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libssl-dev libffi-dev liblzma-dev
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          git \
+          python3-pip \
+          wget \
+          zip \
+          unzip \
+          libltdl-dev \
+          libffi-dev \
+          libssl-dev \
+          autoconf \
+          libtool \
+          pkg-config \
+          zlib1g-dev \
+          libncurses5-dev \
+          libncursesw5-dev \
+          libstdc++6
+
+    - name: Install Buildozer and Cython
+      run: |
         pip install --upgrade pip
-        pip install Cython==0.30.0 buildozer
+        pip install "cython<3.0"
+        pip install buildozer
 
     - name: Build APK
       run: |
@@ -30,7 +50,6 @@ jobs:
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: Jarvis-APK
+        name: package
         path: bin/*.apk
-
         
